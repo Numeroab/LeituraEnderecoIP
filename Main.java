@@ -6,42 +6,73 @@ public class Main {
 
     public static void main(String[] args) {
         String enderecoIP;
+        String rede, broadcast;
+        String broadcast = rede = "";
+        int mascara;
+        char[] binario;
         String classe = "";
         String[] saida = new String[2];
         System.out.print("Digite um endereco IP: ");
         enderecoIP = ler.nextLine();
+
         String[] octetos = enderecoIP.split("\\.");
         int i = 0;
 
-        if (validar(octetos)) {
-            System.out.println("Endereco IP valido.");
-            if (Integer.parseInt(octetos[0]) < 128) {
-                classe = "A";
-
-            } else if (Integer.parseInt(octetos[0]) < 192) {
-                classe = "B";
-
-            } else if (Integer.parseInt(octetos[0]) < 224) {
-                classe = "C";
-
-            }
-            if (classe == "A") {
-                i = 1;
-            }
-            if (classe == "B") {
-                i = 2;
-            }
-            if (classe == "C") {
-                i = 3;
-            }
-            System.out.println("Classe: " + classe);
-            System.out.println(determinarStatus(octetos, classe, i));
-            saida = determinarFaixa(i, octetos);
-            System.out.println(saida[0]);
-            System.out.println(saida[1]);
-        } else {
-            System.out.println("Endereco IP invalido.");
+        String[] separador = octetos[3].split("/");
+        octetos[3] = separador[0];
+        mascara = Integer.parseInt(separador[1]);
+        i = mascara / 8;
+        binario = adquirirBinario(octetos[i]);
+        mascara %= 8;
+        for (int j = 0; j < i; j++) {
+            rede += octetos[j] + ".";
+            broadcast += octetos[j] + ".";
         }
+        for (int j = 0; j < mascara; j++) {
+            String bit = String.valueOf(binario[j]);
+            rede += bit;
+            if (bit.equals("0")) {
+                broadcast += "1";
+            } else {
+                broadcast += "0";
+            }
+            //desenvolver para endereçar os bits, depois completar com 0 ou 1;
+
+
+        }
+        for (int j = mascara; j < 8; j++) {
+            rede += "0";
+            broadcast += "1";
+        }
+        // if (validar(octetos)) {
+        // System.out.println("Endereco IP valido.");
+        // if (Integer.parseInt(octetos[0]) < 128) {
+        // classe = "A";
+
+        // } else if (Integer.parseInt(octetos[0]) < 192) {
+        // classe = "B";
+
+        // } else if (Integer.parseInt(octetos[0]) < 224) {
+        // classe = "C";
+
+        // }
+        // if (classe == "A") {
+        // i = 1;
+        // }
+        // if (classe == "B") {
+        // i = 2;
+        // }
+        // if (classe == "C") {
+        // i = 3;
+        // }
+        // System.out.println("Classe: " + classe);
+        // System.out.println(determinarStatus(octetos, classe, i));
+        // saida = determinarFaixa(i, octetos);
+        // System.out.println(saida[0]);
+        // System.out.println(saida[1]);
+        // } else {
+        // System.out.println("Endereco IP invalido.");
+        // }
 
     }
 
@@ -97,5 +128,22 @@ public class Main {
         faixa[1] += "254";
         return faixa;
 
+    }
+
+    public static char[] adquirirBinario(String decimal) {
+        char[] binario;
+        binario = (Integer.toBinaryString(Integer.parseInt(decimal))).toCharArray();
+
+        return binario;
+
+        // int binario = 0;
+        // int contador = 0;
+        // while (decimal != 0) {
+        // int resto = decimal % 2;
+        // binario += resto * Math.pow(10, contador);
+        // decimal = decimal / 2;
+        // contador++;
+        // }
+        // return binario;
     }
 }
